@@ -4,22 +4,21 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-//TODO: add object for each CdtTrfTxInf object
 public class PainData {
 
     // Debtor amount
     private BigDecimal debtorSum;
     private LocalDate executionDate;
     // Creditor amounts
-    private List<BigDecimal> creditorAmounts;
-    private List<String> ibans;
+    private String debtorIban;
+    private List<CreditorData> creditors;
 
-    public PainData(BigDecimal debtorSum, LocalDate executionDate,
-                    List<BigDecimal> transactionAmounts, List<String> ibans) {
+    public PainData(BigDecimal debtorSum, LocalDate executionDate, String debtorIban,
+                    List<CreditorData> creditors) {
         this.debtorSum = debtorSum;
         this.executionDate = executionDate;
-        this.creditorAmounts = transactionAmounts;
-        this.ibans = ibans;
+        this.debtorIban = debtorIban;
+        this.creditors = creditors;
     }
 
     public BigDecimal getDebtorSum() {
@@ -30,11 +29,12 @@ public class PainData {
         return executionDate;
     }
 
-    public List<BigDecimal> getCreditorAmounts() {
-        return creditorAmounts;
+    public List<CreditorData> getCreditorData() {
+        return creditors;
     }
 
-    public List<String> getIbans() {
-        return ibans;
+    public String getDebtorIban() {
+        return debtorIban;
     }
+
 }

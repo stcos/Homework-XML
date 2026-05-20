@@ -2,6 +2,7 @@ package org.homework.steps;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
+import org.homework.data.CreditorData;
 import org.homework.data.PainData;
 import org.homework.util.Constants;
 import org.homework.util.XmlUtil;
@@ -12,7 +13,9 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MainSteps {
 
@@ -26,9 +29,7 @@ public class MainSteps {
         painData = xmlUtil.parsePaymentMessage();
     }
 
-
     // TEST STEPS
-
     @Then("I check if file is valid ISO 20022 namespace")
     public void checkValidISO20022Namespace() {
         String namespace = xmlUtil.getNameSpace();
@@ -67,7 +68,7 @@ public class MainSteps {
     @Then("I check debtor amount equals to credit amounts sum")
     public void debtorAmountEqualsCreditorAmountsSum() {
         BigDecimal ctrlSum = painData.getDebtorSum();
-        List<BigDecimal> amounts = painData.getCreditorAmounts();
+        List<BigDecimal> amounts = painData.getCreditorData().stream().map(CreditorData::getAmount).toList();
         BigDecimal sum = amounts.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
         Assert.assertEquals(ctrlSum, sum);
     }
@@ -75,7 +76,10 @@ public class MainSteps {
 
     @Then("I check if all IBANs in the file are valid")
     public void allIbansAreValid() throws Exception {
-        for (String iban : painData.getIbans()) {
+        List<String> allIbans = new ArrayList<>();
+        allIbans.add(painData.getDebtorIban());
+        allIbans.addAll(painData.getCreditorData().stream().map(CreditorData::getIban).toList());
+        for (String iban : allIbans) {
             if (!isValidIban(iban)) {
                 throw new Exception("Invalid IBAN: " + iban);
             }
@@ -91,12 +95,19 @@ public class MainSteps {
     }
 
     /**
-     * Check payment file respects
+     * Check payment file respects xsd format
      */
     // NOTE: Test will fail for sanity/pain.xml file
     @Then("I check that the file respects the xsd schema")
     public void validateXmlWithSchema() throws IOException, SAXException {
         xmlUtil.validateXmlWithSchema(Constants.ISO_20022_XSD_FILE_PATH);
+    }
+
+    @Then("I check if all creditor have the same currency")
+    public void checkCurrencyEqualsToAll() {
+        List<String> creditorCurrencies = painData.getCreditorData().stream().map(CreditorData::getCurrency).toList();
+        boolean allSameCurrency = creditorCurrencies.stream().distinct().count() == 1;
+        Assert.assertTrue(allSameCurrency, "Not all currencies have the same value");
     }
 
     private boolean isValidIban(String iban) {

@@ -15,3 +15,5 @@ Feature: Sanity
     Then I check if file is valid ISO 20022 namespace
   Scenario: Check xml file respects ISO 20022 xsd schema
     Then I check that the file respects the xsd schema
+  Scenario: Check currencies are the same for all creditors
+    Then I check if all creditor have the same currency

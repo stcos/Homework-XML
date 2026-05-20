@@ -1,7 +1,9 @@
 package org.homework.util;
 
+import org.homework.data.CreditorData;
 import org.homework.data.PainData;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -67,13 +69,13 @@ public class XmlUtil {
         return LocalDate.parse(value.trim());
     }
 
-    // Returns all IBANs in the document (debtor + all creditors)
-    public List<String> getAllIbans() throws Exception {
-        List<String> ibans = new ArrayList<>();
-        ibans.add(getDebtorIban());
-        ibans.addAll(getCreditorIbans());
-        return ibans;
-    }
+//    // Returns all IBANs in the document (debtor + all creditors)
+//    public List<String> getAllIbans() throws Exception {
+//        List<String> ibans = new ArrayList<>();
+//        ibans.add(getDebtorIban());
+//        ibans.addAll(getCreditorIbans());
+//        return ibans;
+//    }
 
     // Return debtor iban
     public String getDebtorIban() throws Exception {
@@ -81,15 +83,15 @@ public class XmlUtil {
         return iban;
     }
 
-    // Return creditor ibans
-    public List<String> getCreditorIbans() throws Exception {
-        NodeList nodes = getNodeListData("//*[local-name()='CdtrAcct']//*[local-name()='IBAN']");
-        List<String> ibans = new ArrayList<>();
-        for (int i = 0; i < nodes.getLength(); i++) {
-            ibans.add(nodes.item(i).getTextContent().trim());
-        }
-        return ibans;
-    }
+//    // Return creditor ibans
+//    public List<String> getCreditorIbans() throws Exception {
+//        NodeList nodes = getNodeListData("//*[local-name()='CdtrAcct']//*[local-name()='IBAN']");
+//        List<String> ibans = new ArrayList<>();
+//        for (int i = 0; i < nodes.getLength(); i++) {
+//            ibans.add(nodes.item(i).getTextContent().trim());
+//        }
+//        return ibans;
+//    }
 
     // Return namespace
     public String getNameSpace() {
@@ -101,9 +103,22 @@ public class XmlUtil {
         return new PainData(
                 getDebtorSum(),
                 getExecutionDate(),
-                getCreditorAmounts(),
-                getAllIbans()
+                getDebtorIban(),
+                getCreditors()
         );
+    }
+
+    public List<CreditorData> getCreditors() throws Exception {
+        NodeList nodes = getNodeListData("//*[local-name()='CdtTrfTxInf']");
+        List<CreditorData> creditors = new ArrayList<>();
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Node node = nodes.item(i);
+            String iban = xpath.evaluate(".//*[local-name()='IBAN']", node);
+            String amount = xpath.evaluate(".//*[local-name()='InstdAmt']", node);
+            String currency = xpath.evaluate(".//*[local-name()='InstdAmt']/@Ccy", node);
+            creditors.add(new CreditorData(iban, new BigDecimal(amount.trim()), currency));
+        }
+        return creditors;
     }
 
     public void validateXmlWithSchema(String xsdSchemaPath) throws IOException, SAXException {

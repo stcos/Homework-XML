@@ -36,4 +36,7 @@ mvn test -DfilePath="src/test/resources/data-files/sanity/pain.xml" -DxsdFilePat
 ## What is executed
 src/test/java/resources/features/sanity.feature tests
 
+## Reports
+After execution using ``` mvn test ``` reports will be generated in target/cucumber-reports/
+
 
