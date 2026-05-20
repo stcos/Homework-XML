@@ -1,5 +1,9 @@
 # Homework XML
 A Cucumber + TestNG project that validates an ISO 20022 PAIN XML payment file.
+- debtor total amount has at least 2 digits
+- debtor amount is equal to the sum of all credits
+- transaction date is not in the future
+- IBANs are valid
 
 ## Requirements
 
@@ -11,6 +15,12 @@ A Cucumber + TestNG project that validates an ISO 20022 PAIN XML payment file.
 ```
 mvn install -DskipTests
 mvn test
+```
+
+```
+mvn test -DfilePath="src/test/resources/data-files/sanity/pain.xml" 
+mvn test -DxsdFilePath="src/test/resources/data-files/schemas/pain.001.001.11.xsd"
+mvn test -DfilePath="src/test/resources/data-files/sanity/pain.xml" -DxsdFilePath="src/test/resources/data-files/schemas/pain.001.001.11.xsd"
 ```
 
 ### From IntelliJ
@@ -27,14 +37,10 @@ To specify a custom file path or/and different schema location
 
 Message name: CustomerCreditTransferInitiationV11
 
-```
-mvn test -DfilePath="src/test/resources/data-files/sanity/pain.xml" 
-mvn test -DxsdFilePath="src/test/resources/data-files/schemas/pain.001.001.11.xsd"
-mvn test -DfilePath="src/test/resources/data-files/sanity/pain.xml" -DxsdFilePath="src/test/resources/data-files/schemas/pain.001.001.11.xsd"
-```
+
 
 ## What is executed
-src/test/java/resources/features/sanity.feature tests
+src/test/java/resources/features/pain.feature tests
 
 ## Reports
 After execution using ``` mvn test ``` reports will be generated in target/cucumber-reports/

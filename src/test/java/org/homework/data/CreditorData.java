@@ -2,6 +2,9 @@ package org.homework.data;
 
 import java.math.BigDecimal;
 
+/**
+ * Store essential data of CdtTrfTxInf xml object in pain_fixed.xml
+ */
 public class CreditorData {
     private String iban;
     private BigDecimal amount;

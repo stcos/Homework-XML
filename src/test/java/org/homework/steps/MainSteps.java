@@ -15,7 +15,6 @@ import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class MainSteps {
 
@@ -25,7 +24,12 @@ public class MainSteps {
     // SETUP STEPS
     @Given("I load payment file")
     public void loadPaymentFile() throws Exception {
-        xmlUtil = new XmlUtil(Constants.SANITY_FILE_PATH);
+        xmlUtil = new XmlUtil(Constants.PAYMENT_FILE_PATH);
+        painData = xmlUtil.parsePaymentMessage();
+    }
+    @Given("I load payment file {string}")
+    public void loadPaymentFile(String filePath) throws Exception {
+        xmlUtil = new XmlUtil(filePath);
         painData = xmlUtil.parsePaymentMessage();
     }
 
@@ -43,7 +47,6 @@ public class MainSteps {
     @Then("I check if the debtor amount has 2 digits")
     public void checkDebtorAmountHasDigits() {
         BigDecimal amount = painData.getDebtorSum();
-        System.out.println(amount.scale());
         boolean hasDecimal = amount.scale() > 0;
         boolean hasTwoIntegerDigits = amount.toBigInteger().toString().length() >= 2;
         Assert.assertTrue(hasDecimal || hasTwoIntegerDigits);
@@ -89,7 +92,7 @@ public class MainSteps {
     /**
      * Checks that the execution date is not in the future
      */
-    @Then("I check transaction date is not in future")
+    @Then("I check transaction date is the past")
     public void checkDateIsNotInFuture() {
         Assert.assertTrue(painData.getExecutionDate().isBefore(LocalDate.now()));
     }
@@ -97,7 +100,6 @@ public class MainSteps {
     /**
      * Check payment file respects xsd format
      */
-    // NOTE: Test will fail for sanity/pain.xml file
     @Then("I check that the file respects the xsd schema")
     public void validateXmlWithSchema() throws IOException, SAXException {
         xmlUtil.validateXmlWithSchema(Constants.ISO_20022_XSD_FILE_PATH);

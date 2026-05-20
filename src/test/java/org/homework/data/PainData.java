@@ -4,6 +4,10 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+
+/**
+ * Store essential data of main xml object in pain_fixed.xml
+ */
 public class PainData {
 
     // Debtor amount
