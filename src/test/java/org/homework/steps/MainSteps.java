@@ -53,15 +53,17 @@ public class MainSteps {
     }
 
     /**
-     * Check that all amounts in file hs at least 2 digits
+     * Check that creditor amounts in file hs at least 2 digits
      */
     @Then("I check if the creditor amounts have 2 digits")
     public void checkCreditAmountsHaveDigits() {
-        BigDecimal amount = painData.getDebtorSum();
-        System.out.println(amount.scale());
-        boolean hasDecimal = amount.scale() > 0;
-        boolean hasTwoIntegerDigits = amount.toBigInteger().toString().length() >= 2;
-        Assert.assertTrue(hasDecimal || hasTwoIntegerDigits);
+        List<BigDecimal> amounts = painData.getCreditorData().stream().map(CreditorData::getAmount).toList();
+
+        for (BigDecimal amount : amounts) {
+            boolean hasDecimal = amount.scale() > 0;
+            boolean hasTwoIntegerDigits = amount.toBigInteger().toString().length() >= 2;
+            Assert.assertTrue(hasDecimal || hasTwoIntegerDigits, "Amount does not have 2 digits: " + amount);
+        }
     }
 
 

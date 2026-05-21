@@ -10,6 +10,9 @@ Feature: Payment XML file
   Scenario: Check amount has 2 digits
     Then I check if the debtor amount has 2 digits
 
+  Scenario: Check creditor amounts have 2 digits
+    Then I check if the creditor amounts have 2 digits
+
   Scenario: Check date of transaction is in past
     Then I check transaction date is the past
 
